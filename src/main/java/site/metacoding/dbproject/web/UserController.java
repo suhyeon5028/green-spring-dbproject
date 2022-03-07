@@ -4,7 +4,6 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import javax.websocket.Session;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,11 +35,24 @@ public class UserController {
         return "user/joinForm";
     }
 
+    // username=김수현&password=&email=suhyeon5028@naver.com 패스워드 공백
+    // username=김수현&email=suhyeon5028@naver.com 패스워드 null
     // username=김수현&password=1234&email=suhyeon5028@naver.com (x-www-form)
     // 회원가입 - 로그인X
     @PostMapping("/join")
     public String join(User user) {
-        userRepository.save(user);
+
+        // 1. username, password, email 1.null체크, 2.공백체크
+        if (user.getUsername() == null || user.getPassword() == null || user.getEmail() == null) {
+            return "redirect:/joinForm";
+        }
+        if (user.getUsername().equals("") || user.getPassword().equals("") || user.getEmail().equals("")) {
+            return "redirect:/joinForm";
+        }
+
+        // 2. 핵심로직
+        User userEntity = userRepository.save(user);
+        System.out.println("userEntity : " + userEntity);
         // redirect : 매핑주소
         return "redirect:/loginForm"; // 로그인 페이지로 이동해주는 컨트롤러 메서드를 재활용
     }
@@ -116,6 +128,7 @@ public class UserController {
     // 로그아웃 - 로그인O
     @GetMapping("/logout")
     public String logout() {
-        return "메인페이지를 돌려주면 됨"; // PostController 만들고 수정하자.
+        session.invalidate();
+        return "redirect:/loginForm"; // PostController 만들고 수정하자.
     }
 }
