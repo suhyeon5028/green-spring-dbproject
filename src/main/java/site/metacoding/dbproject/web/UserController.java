@@ -114,7 +114,7 @@ public class UserController {
     }
 
     // 회원정보수정 페이지 (동적) - 로그인O
-    @GetMapping("/user/{id}/updateForm")
+    @GetMapping("/user/updateForm")
     public String updateForm() {
         return "user/updateForm";
     }
