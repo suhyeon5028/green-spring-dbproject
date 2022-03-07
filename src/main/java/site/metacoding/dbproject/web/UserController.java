@@ -129,6 +129,6 @@ public class UserController {
     @GetMapping("/logout")
     public String logout() {
         session.invalidate();
-        return "redirect:/loginForm"; // PostController 만들고 수정하자.
+        return "redirect:/loginForm";
     }
 }
