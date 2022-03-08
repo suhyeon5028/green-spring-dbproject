@@ -64,11 +64,14 @@ public class UserController {
     public String loginForm(HttpServletRequest request, Model model) {
         // jSessionId=fjsdklfjsadkfjsdlkj333333;remember=ssar
         // request.getHeader("Cookie");
-        Cookie[] cookies = request.getCookies(); // jSessionId, remember 두개가 있음.
-        for (Cookie cookie : cookies) {
-            System.out.println("쿠키값 : " + cookie.getName());
-            if (cookie.getName().equals("remember")) {
-                model.addAttribute("remember", cookie.getValue());
+        if (request.getCookies() != null) {
+            Cookie[] cookies = request.getCookies(); // jSessionId, remember 두개가 있음.
+
+            for (Cookie cookie : cookies) {
+                System.out.println("쿠키값 : " + cookie.getName());
+                if (cookie.getName().equals("remember")) {
+                    model.addAttribute("remember", cookie.getValue());
+                }
             }
         }
         return "user/loginForm";
@@ -92,8 +95,10 @@ public class UserController {
             System.out.println("로그인 되었습니다.");
             session.setAttribute("principal", userEntity);
 
-            if (user.getRemember().equals("on")) {
-                response.setHeader("Set-Cookie", "remember=" + user.getUsername());
+            if (user.getRemember() != null && user.getRemember().equals("on")) {
+                response.addHeader("Set-Cookie", "remember=" + user.getUsername());
+                // response.addHeader(name, value);
+                // response.addCookie(cookie);
             }
         }
         // 1. DB 연결해서 username, password있는지 확인
@@ -101,9 +106,16 @@ public class UserController {
         return "redirect:/"; // PostController 만들고 수정하자
     }
 
+    // 로그아웃 - 로그인O
+    @GetMapping("/logout")
+    public String logout() {
+        session.invalidate();
+        return "redirect:/loginForm";
+    }
+
     // http://localhost:8080/user/1
     // 회원정보상세 페이지 (동적) - 로그인O
-    @GetMapping("/user/{id}")
+    @GetMapping("/s/user/{id}")
     public String detail(@PathVariable Integer id, Model model) {
         User principal = (User) session.getAttribute("principal");
 
@@ -130,21 +142,14 @@ public class UserController {
     }
 
     // 회원정보수정 페이지 (동적) - 로그인O
-    @GetMapping("/user/updateForm")
+    @GetMapping("/s/user/updateForm")
     public String updateForm() {
         return "user/updateForm";
     }
 
     // 회원정보 수정완료 - 로그인O
-    @PutMapping("/user/{id}")
+    @PutMapping("/s/user/{id}")
     public String update(@PathVariable Integer id) {
         return "redirect:/user/" + id;
-    }
-
-    // 로그아웃 - 로그인O
-    @GetMapping("/logout")
-    public String logout() {
-        session.invalidate();
-        return "redirect:/loginForm";
     }
 }
