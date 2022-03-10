@@ -47,13 +47,13 @@ public class PostController {
         return "post/list";
     }
 
-    // GET 글상세보기 페이지 /post/{id} (삭제버튼 만들어 두면됨, 수정버튼 만들어 두면됨) - 인증 필요 x
+    // GET 글상세보기 페이지 /post/{id} (삭제버튼, 수정버튼 만들어 두면됨) - 인증 필요 x
     @GetMapping("/post/{id}") // get 요청에 /post 제외 시키기
     public String detail(@PathVariable Integer id, Model model) {
-        Optional<Post> postOP = postRepository.findById(id);
+        Optional<Post> postOp = postRepository.findById(id);
 
-        if (postOP.isPresent()) {
-            Post postEntity = postOP.get();
+        if (postOp.isPresent()) {
+            Post postEntity = postOp.get();
             model.addAttribute("post", postEntity);
             return "post/detail";
         } else {
